@@ -5,7 +5,7 @@
 %%%-------------------------------------------------------------------
 -module(chopstick).
 
--export([start/0, request/1, return/1, quit/1]).
+-export([start/0, request/2, return/1, quit/1]).
 
 
 % Start the available-gone process
@@ -14,11 +14,14 @@ start() ->
 
 % Request a chopstick. The chopstick will change state from available
 % to gone
-request(Stick) ->
+request(Stick, Timeout) ->
   Stick ! {request, self()},
   receive
     granted ->
       ok
+  after 
+    Timeout ->
+      no
   end.
 
 % Request a chopstick. The chopstick will change state from gone to
