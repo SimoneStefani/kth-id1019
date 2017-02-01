@@ -10,25 +10,25 @@
 
 % Start the available-gone process
 start() ->
-    spawn_link(fun() -> init() end).
+  spawn_link(fun() -> init() end).
 
 % Request a chopstick. The chopstick will change state from available
 % to gone
 request(Stick) ->
-    Stick ! {request, self()},
-    receive
-        granted ->
-            ok
-    end.
+  Stick ! {request, self()},
+  receive
+    granted ->
+      ok
+  end.
 
 % Request a chopstick. The chopstick will change state from gone to
 % available
 return(Stick) ->
-    Stick ! {return}.
+  Stick ! {return}.
 
 % Quit the state-machine
 quit(Stick) ->
-    Stick ! {quit}.
+  Stick ! {quit}.
 
 
 %%%-------------------------------------------------------------------
@@ -37,23 +37,23 @@ quit(Stick) ->
 
 % Start process at entry-point available
 init() ->
-    available().
+  available().
 
 % The chopstick is available
 available() ->
-    receive
-        {request, From} ->
-            From ! granted,
-            gone();
-        quit ->
-            ok
-    end.
+  receive
+    {request, From} ->
+      From ! granted,
+      gone();
+    quit ->
+      ok
+  end.
 
 % The chopstick is gone
 gone() ->
-    receive
-        return ->
-            available;
-        quit ->
-            ok
-    end
+  receive
+    return ->
+      available();
+    quit ->
+      ok
+  end.
