@@ -8,14 +8,20 @@
 -compile(export_all).
 
 
+% BASIC OPERATION WITH COMPLEX NUMBERS
+
+% Generate a new complex number of the form X + Yi
 new(X, Y) ->
   {X, Y}.
 
-add({Ar, Ai}, {Br, Bi}) ->
-  {Ar + Br, Ai + Bi}.
+% Add two complex numbers: (A + Bi) + (C + Di) = (A + C) + (Bi + Di)
+add({A, B}, {C, D}) ->
+  {A + C, B + D}.
 
-sqr({Ar, Ai}) ->
-  {(Ar * Ar) - (Ai * Ai), 2 * Ar * Ai}.
+% Square a complex number: (A + Bi)^2 = (A^2 - (B)^2) + 2A(Bi)
+sqr({A, B}) ->
+  {(A * A) - (B * B), 2 * A * B}.
 
-abs({Ar, Ai}) ->
-  math:sqrt(Ar * Ar + Ai * Ai).
+% Absolute value of a complex number: |A + Bi| = √(A^2 + B^2)
+abs({A, B}) ->
+  math:sqrt(A * A + B * B).
