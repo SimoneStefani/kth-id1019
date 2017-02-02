@@ -5,14 +5,15 @@
 %%%-------------------------------------------------------------------
 -module(color).
 
--compile(export_all).
+-export([convert/2]).
 
 
+% Convert a depth (I) and a maximum depth (M) into a RGB tuple
 convert(Depth, Max) ->
   F = Depth / Max,
-  A = F * 4.0,
+  A = F * 4,
   X = trunc(A),
-  Y = 255 * (A - X),
+  Y = trunc(255 * (A - X)),
   case X of
     0 -> {Y, 0, 0};
     1 -> {255, Y, 0};
