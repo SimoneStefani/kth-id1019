@@ -34,16 +34,16 @@ eval_expr({var, Id}, Env) ->
     {Id, Str} ->
       {ok, Str}
   end;
-eval_expr({cons, {var, Foo}, {atm, Bar}}, Env) ->
-  case eval_expr({var, Foo}, Env) of
+eval_expr({cons, {var, VarId}, {atm, AtmId}}, Env) ->
+  case eval_expr({var, VarId}, Env) of
     error ->
       error;
-    {ok, Baz} ->
-      case eval_expr({atm, Bar}, Env) of
+    {ok, Str} ->
+      case eval_expr({atm, AtmId}, Env) of
         error ->
           error;
-        {ok, Bar} ->
-          {ok, {Baz, Bar}}
+        {ok, AtmId} ->
+          {ok, {Str, AtmId}}
       end
   end.
 
