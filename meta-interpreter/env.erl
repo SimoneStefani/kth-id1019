@@ -5,7 +5,7 @@
 %%%-------------------------------------------------------------------
 -module(env).
 
--export([new/0, add/3, lookup/2]).
+-export([new/0, add/3, lookup/2, closure/2]).
 
 
 % Return an empty environment
@@ -20,19 +20,3 @@ add(Id, Str, Env) ->
 % Return either {Id, Str}, if the variable Id is bound, or false
 lookup(Id, Env) ->
   lists:keyfind(Id, 1, Env).
-
-closure(Ids, Env) ->    
-  lists:foldr(fun(Id, Acc) -> 
-    case Acc of 
-      error ->
-        error;
-      Cls -> case env:lookup(Id, Env) of
-          {Id, Value} ->
-        [{Id, Value}|Cls];
-          false ->
-        error
-      end
-    end
-  end,
-  [],
-  Ids).
