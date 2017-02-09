@@ -10,7 +10,8 @@
 
 % Start the available-gone process
 start() ->
-  spawn_link(fun() -> init() end).
+  Stick = spawn_link(fun() -> init() end),
+  {stick, Stick}.
 
 % Request a chopstick. The chopstick will change state from available
 % to gone
@@ -58,7 +59,7 @@ available() ->
   end.
 
 % The chopstick is gone
-gone() ->
+gone(Ref) ->
   receive
     {return, Ref} ->
 	    available();
