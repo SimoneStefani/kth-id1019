@@ -9,7 +9,7 @@ A philosopher spends most of the time dreaming. When she decides to eat, she pic
 ### 2. The chopstick
 
 A chopstick is initially `available` and waits for a *`request`* message. When the request is received the chopstick's state changes to `gone` and only a *`return`* message can bring its state back to available. The state of the chopstick is represented by a **process**. A `quit` message terminates the process independently of which states is represented. The following *finite state machine* graph depicts the states of the chopstick: 
-<p align="center"><img src=""></p>
+<p align="center"><img src="https://github.com/SimoneStefani/kth-id1019/blob/master/dining-philosophers/img/chopsticks.png"></p>
 
 The two states of the chopsticks are defined by the following two processes:
 
@@ -39,7 +39,7 @@ The public API functions `start/0`, `request/3`, `return/2`, `quit/1` are used t
 
 The philosopher can be in three states: dreaming, waiting, eating. A philosopher in `dreaming` state may move to `waiting` after a certain amount of time. If both the *Left* and *Right* chopsticks are available they will be claimed and the philosopher moves to `eating` state. After spending some time in eating state, the philosopher returns the two chopsticks and moves to the dreaming state. This process repeats until the *Hungry* indicator reaches the value 0.
 
-<p align="center"><img src=""></p>
+<p align="center"><img src="https://github.com/SimoneStefani/kth-id1019/blob/master/dining-philosophers/img/philosopher.png"></p>
 
 ```erlang
 dreaming(0, _Left, _Right, Name, Ctrl) ->
