@@ -8,6 +8,10 @@
 -export([parse_request/1, ok/1, get/1]).
 
 
+%%%-------------------------------------------------------------------
+%%% Simple HTTP parser
+%%%-------------------------------------------------------------------
+
 parse_request(R0) ->
   {Request, R1} = request_line(R0),
   {Headers, R2} = headers(R1),
@@ -47,6 +51,8 @@ header([C | R0]) ->
 message_body(R) ->
   {R, []}.
 
+
+% Helper functions for HTTP 200 OK and for basic get request
 ok(Body) ->
   "HTTP/1.1 200 OK\r\n" ++ "\r\n" ++ Body.
 
