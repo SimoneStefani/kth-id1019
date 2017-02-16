@@ -16,15 +16,13 @@ mandelbrot(C, M) ->
 
 % Test if reached max number of iterations and return 0. If the 
 % absolute value of Z is greater or equal than 2 return I
-test(_,_,_,0)->
+test(I, _, _, I)->
 	0;
 test(I, Z0, C, M) ->
-  Zsqrd = cmplx:sqr(Z0),
-  ZplusOne = cmplx:add(C, Zsqrd),
   Zabs = cmplx:abs(Z0),
   if
-    Zabs >= 2 ->
+    Zabs > 2 ->
       I;
     true ->
-      test(I + 1, ZplusOne, C, M - 1)
+      test(I + 1, cmplx:add(C, cmplx:sqr(Z0)), C, M)
   end.

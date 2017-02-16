@@ -8,7 +8,9 @@
 -compile(export_all).
 
 
-% BASIC OPERATION WITH COMPLEX NUMBERS
+%%%-------------------------------------------------------------------
+%%% Basic operations with complex numbers
+%%%-------------------------------------------------------------------
 
 % Generate a new complex number of the form X + Yi
 new(X, Y) ->
