@@ -19,7 +19,7 @@ run(N, Host, Port) ->
 
 request(Host, Port) ->
   Opt = [list, {active, false}, {reuseaddr, true}],
-  {ok, Server} = gen_tcp:connect(Host, Port, Opt),
+  {ok, Server} = gen_tcp:connect("localhost", Port, Opt),
   gen_tcp:send(Server, http:get("foo")),
   Recv = gen_tcp:recv(Server, 0),
   case Recv of

@@ -32,23 +32,29 @@ areaOfCircle(Radius) ->
 %%% Section 3: Recursive definitions
 %%%-------------------------------------------------------------------
 
-product(0, _) ->
-  0;
 product(M, N) ->
-  N + product(M - 1, N).
+  if
+    M == 0 -> 0;
+    true -> N + product(M - 1, N)
+  end.
 
-exp(X, 1) ->
-  X;
-exp(X, Y) ->
-  product(X, exp(X, Y - 1)).
+product2(0, _) -> 0;
+product2(M, N) -> N + product2(M - 1, N).
 
+product3(M, N) ->
+  case M of
+    0 -> 0;
+    _ -> N + product3(M - 1, N)
+  end.
 
-fastExp(X, 1) ->
-  X;
-fastExp(X, Y) ->
-  case Y rem 2 of
-    1 -> X * fastExp(X * X, (Y - 1) div 2);
-    0 -> fastExp(X * X, (Y div 2))
+exp(_, 0) -> 1;
+exp(X, Y) -> product(X, exp(X, Y - 1)).
+
+exp2(X, 1) -> X;
+exp2(X, N) ->
+  case (N rem 2) of
+    0 -> exp2(X, N div 2) * exp2(X, N div 2);
+    _ -> exp2(X, (N - 1)) * X
   end.
 
 
@@ -56,206 +62,152 @@ fastExp(X, Y) ->
 %%% Section 4: List operations
 %%%-------------------------------------------------------------------
 
-nth(N, L) ->
-  case N of
-    1 -> [Head | _] = L,
-      Head;
-    _ -> [_ | Tail] = L,
-      nth(N - 1, Tail)
-  end.
+nth(_, []) -> io:format("The element doesn't exists!~n");
+nth(1, [H|_]) -> H;
+nth(N, [_|T]) -> nth(N-1, T).
 
+number([]) -> 0;
+number([_|T]) -> 1 + number(T).
 
-number(L) ->
-  number(L, 0).
-number(L, N) ->
-  case L of
-    [] -> N;
-    _ -> [_ | Tail] = L,
-      number(Tail, N + 1)
-  end.
-
+number2(L) -> number2(L, 0).
+number2([], C) -> C;
+number2([_|T], C) -> number2(T, C+1).
 
 sum([]) -> 0;
-sum([H | T]) -> H + sum(T).
+sum([H|T]) -> H + sum(T).
 
+sum2(L) -> sum2(L, 0).
+sum2([], S) -> S;
+sum2([H|T], S) -> sum2(T, S + H).
 
-duplicate([]) -> [];
-duplicate([H | T]) -> [H, H | duplicate(T)].
+duplicate(L) -> duplicate(L, []).
+duplicate([], D) -> D;
+duplicate([H|T], D) -> duplicate(T, D++[H,H]).
 
+duplicate2([]) -> [];
+duplicate2([H|T]) -> [H,H|duplicate2(T)].
 
-unique(L) ->
-  unique(L, []).
-unique([], Uni) ->
-  reverse(Uni);
-unique([H | T], Uni) ->
-  case lists:member(H, Uni) of
-    false -> unique(T, [H | Uni]);
-    true -> unique(T, Uni)
+member(_, []) -> false;
+member(M, [M|_]) -> true;
+member(M, [_|T]) -> member(M, T).
+
+unique(L) -> unique(L, []).
+unique([], U) -> U;
+unique([H|T], U) ->
+  case member(H,U) of
+    true -> unique(T,U);
+    false -> unique(T,U++[H])
   end.
 
+reverse([]) -> [];
+reverse([H|T]) -> reverse(T)++[H].
 
-reverse(L) ->
-  reverse(L, []).
-reverse([], Rev) ->
-  Rev;
-reverse([H | T], Rev) ->
-  reverse(T, [H | Rev]).
-
-
-pack([]) ->
-  [];
-pack([H | []]) ->
-  [H];
-pack([H | T]) ->
-  pack(T, [H], []).
-
-pack([], Temp, Acc) ->
-  lists:reverse([Temp | Acc]);
-pack([H | T], Temp, Acc) when H == hd(Temp) ->
-  pack(T, [H | Temp], Acc);
-pack([H | T], Temp, Acc) ->
-  pack(T, [H], [Temp | Acc]).
+reverse2(L) -> reverse2(L, []).
+reverse2([], R) -> R;
+reverse2([H|T], R) -> reverse2(T, [H|R]).
 
 
-% Insertion sort
-isort(List) ->
-  isort(List, []).
+%%%-------------------------------------------------------------------
+%%% Section 5: Sort
+%%%-------------------------------------------------------------------
 
-isort([], Sorted) ->
-  Sorted;
-isort([H | T], Sorted) ->
-  isort(T, insert(H, Sorted)).
+%%% Insertion Sort
+isort(L) -> isort(L, []).
+isort([],S) -> S;
+isort([H|T], S) -> isort(T, insert(H,S)).
 
-insert(Element, []) ->
-  [Element];
-insert(Element, [H | T]) ->
+insert(E, []) -> [E];
+insert(E, [H|T]=L) ->
   if
-    Element < H -> [Element | [H | T]];
-    true -> [H | insert(Element, T)]
+    E < H -> [E|L];
+    true -> [H|insert(E,T)]
   end.
 
 
-% Merge sort
-msort([]) ->
-  [];
-msort([U]) ->
-  [U];
-msort(List) ->
-  {Left, Right} = msplit(List, [], []),
-  merge(msort(Left), msort(Right)).
+%%% Merge Sort
+msort([H|[]]) ->[H];
+msort(L) ->
+  {A, B} = msplit(L, [], []),
+  merge(msort(A), msort(B)).
 
-msplit([], Left, Right) ->
-  {Left, Right};
-msplit([H | T], Left, Right) ->
-  msplit(T, Right, [H | Left]).
+msplit([], A, B) -> {A, B};
+msplit([H|T], A, B) -> msplit(T, [H|B], A).
 
-merge(L, []) -> L;
-merge([], R) -> R;
-merge([LH | LT], [RH | RT]) ->
+merge(A, []) -> A;
+merge([], B) -> B;
+merge([HA|TA]=A, [HB|TB]=B) ->
   if
-    LH < RH -> [LH | merge(LT, [RH | RT])];
-    true -> [RH | merge([LH | LT], RT)]
+    HA < HB -> [HA|merge(TA,B)];
+    true -> [HB|merge(A,TB)]
   end.
 
 
-% Quicksort
+%%% QuickSort
 qsort([]) -> [];
-qsort([Pivot | T]) ->
-  {Small, Large} = qsplit(Pivot, T, [], []),
-  SmallSorted = qsort(Small),
-  LargeSorted = qsort(Large),
-  SmallSorted ++ [Pivot] ++ LargeSorted.
+qsort([H|T]) ->
+  {SS, LS} = qsplit(T, H, [], []),
+  qsort(SS) ++ [H] ++ qsort(LS).
 
-qsplit(_, [], Small, Large) ->
-  {Small, Large};
-qsplit(Pivot, [H | T], Small, Large) ->
+qsplit([], _, A, B) -> {A, B};
+qsplit([H|T], P, A, B) ->
   if
-    H =< Pivot -> qsplit(Pivot, T, [H | Small], Large);
-    H > Pivot -> qsplit(Pivot, T, Small, [H | Large])
+    H < P -> qsplit(T, P, [H|A], B);
+    true -> qsplit(T, P, A, [H|B])
   end.
 
 
-%%%-------------------------------------------------------------------
-%%% Section 5: Reverse
-%%%-------------------------------------------------------------------
-
-nreverse([]) -> [];
-nreverse([H | T]) ->
-  R = nreverse(T),
-  lists:append(R, [H]).
-
-% For accumulator reverse see Section 2
-
-bench() ->
-  Ls = [16, 32, 64, 128, 256, 512],
-  N = 100,
-  Bench = fun(L) ->
-    S = lists:seq(1, L),
-    Tn = time(N, fun() -> nreverse(S) end),
-    Tr = time(N, fun() -> reverse(S) end),
-    io:format("length: ~10w nrev: ~8w us rev: ~8w us~n", [L, Tn, Tr])
-          end,
-  lists:foreach(Bench, Ls).
-time(N, F) ->
-%% time in micro seconds
-  T1 = erlang:system_time(micro_seconds),
-  loop(N, F),
-  T2 = erlang:system_time(micro_seconds),
-  (T2 - T1).
-loop(N, Fun) ->
-  if N == 0 -> ok; true -> Fun(), loop(N - 1, Fun) end.
-
-% With nreverse we have to traverse the list every time we append an element
+quick([]) -> [];
+quick([P|L]) ->
+  quick([X||X <- L, X < P]) ++ [P] ++ quick([X||X <- L, X >= P]).
 
 
-%%%-------------------------------------------------------------------
-%%% Section 6: Binary coding
-%%%-------------------------------------------------------------------
-
-intToBinA(Int) ->
-  intToBinA(Int, []).
-intToBinA(0, L) -> L;
-intToBinA(Int, L) ->
-  case Int rem 2 of
-    0 -> intToBinA(Int div 2, [0 | L]);
-    1 -> intToBinA(Int div 2, [1 | L])
-  end.
-
-
-intToBinB(Int) ->
-  intToBinB(Int, [], greaterTwo(Int, 1)).
-intToBinB(_, L, 0) ->
-  reverse(L);
-intToBinB(Int, L, N) ->
-  case Int - N >= 0 of
-    true -> intToBinB(Int - N, [1 | L], N div 2);
-    false -> intToBinB(Int, [0 | L], N div 2)
-  end.
-
-greaterTwo(Int, Pow) ->
-  case Pow > Int of
-    true -> Pow div 2;
-    false -> greaterTwo(Int, 2 * Pow)
-  end.
-
-
-%%%-------------------------------------------------------------------
-%%% Section 7: Fibonacci
-%%%-------------------------------------------------------------------
-
-fib(0) -> 1;
+fib(0) -> 0;
 fib(1) -> 1;
-fib(N) ->
-  fib(N - 1) + fib(N - 2).
+fib(N) -> fib(N-2) + fib(N-1).
 
-fibb() ->
-  Ls = [8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40],
-  N = 10,
-  Bench = fun(L) ->
-    T = time(N, fun() -> fib(L) end),
-    io:format("n: ~4w fib(n) calculated in: ~8w us~n", [L, T])
-          end,
-  lists:foreach(Bench, Ls).
 
-% Computational complexity: O(2^n). We repeat the whole stack of computations
-% at every recursive step.
+%%%-------------------------------------------------------------------
+%%% Section 6: Trees
+%%%-------------------------------------------------------------------
+
+% introduction:treeMember(2, {node, 38, {node, 40, {leaf, 42}, {leaf, 39}}, {leaf, 34}}).
+treeMember(_, nil) -> false;
+treeMember(N, {leaf, N}) -> true;
+treeMember(_, {leaf, _}) -> false;
+treeMember(N, {node, N, _, _}) -> true;
+treeMember(N, {node, _, L, R}) ->
+  case treeMember(N, L) of
+    true -> true;
+    false -> treeMember(N, R)
+  end.
+
+% introduction:lookup(q, {node, k, 38, {node, b, 34, nil, nil}, {node, o, 40, {node, l, 42, nil, nil}, {node, q, 39, nil, nil}}})
+lookup(_, nil) -> no;
+lookup(Key, {node, Key, V, _, _}) -> V;
+lookup(Key, {node, K, _, L, R}) ->
+  if
+    Key < K -> lookup(Key, L);
+    true -> lookup(Key, R)
+  end.
+
+% T = introduction:modify(q, 55, {node, k, 38, {node, b, 34, nil, nil}, {node, o, 40, {node, l, 42, nil, nil}, {node, q, 39, nil, nil}}}).
+% introduction:lookup(q, T).
+modify(_, _, nil) -> nil;
+modify(Key, Val, {node, Key, _, L, R}) ->
+  {node, Key, Val, L, R};
+modify(Key, Val, {node, K, V, L, R}) ->
+  if
+    Key < K -> {node, K, V, modify(Key, Val, L), R};
+    true -> {node, K, V, L, modify(Key, Val, R)}
+  end.
+
+% T = introduction:insert(m, 55, {node, k, 38, {node, b, 34, nil, nil}, {node, o, 40, {node, l, 42, nil, nil}, {node, q, 39, nil, nil}}}).
+insert(Key, Value, nil) -> {node, Key, Value, nil, nil};
+insert(Key, Value, {node, K, V, L, R}) ->
+  if
+    Key < K -> {node, K, V, insert(Key, Value, L), R};
+    true -> {node, K, V, L, insert(Key, Value, R)}
+  end.
+
+% TODO Delete
+
